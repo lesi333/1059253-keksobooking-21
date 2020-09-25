@@ -1,26 +1,7 @@
 "use strict";
+const mapPinsList = document.querySelector(`.map__pins`);
 
 const TITLE = [`Роскошный королевский дворец`, `Прекрасный дворец с огромными окнами в пол`, `Милая уютная квартирка`, `Просторная квартира с прекрасным видом`, `Уютный домик у моря в греческом стиле`, `Шикарный дом с видом на горы`, `Тихое и романтичное бунгало`, `Бунгало на побережье океана`];
-const PRICE = [
-  {
-    min: 1000,
-    max: 1000000
-  }
-];
-const ROOMS = [
-  {
-    min: 1,
-    max: 5
-  }
-];
-
-const GUESTS = [
-  {
-    min: 1,
-    max: 20
-  }
-];
-
 const CHECKIN = [`12:00`, `13:00`, `14:00`];
 const CHECKOUT = [`12:00`, `13:00`, `14:00`];
 const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
@@ -35,7 +16,7 @@ const getRandomMinMaxElement = (min, max) => {
 };
 
 const createMapContent = () => {
-  let mapsContent = [];
+  const mapsContent = [];
 
   for (let i = 1; i < 9; i++) {
     const locations = {
@@ -53,9 +34,9 @@ const createMapContent = () => {
       offer: {
         title: TITLE[i],
         address: locations.x + `, ` + locations.y,
-        price: getRandomMinMaxElement(PRICE.min, PRICE.max),
-        rooms: getRandomMinMaxElement(ROOMS.min, ROOMS.max),
-        guests: getRandomMinMaxElement(GUESTS.min, GUESTS.max),
+        price: getRandomMinMaxElement(1000, 1000000),
+        rooms: getRandomMinMaxElement(1, 5),
+        guests: getRandomMinMaxElement(1, 20),
         checkin: CHECKIN[getRandomMinMaxElement(0, 2)],
         checkout: CHECKOUT[getRandomMinMaxElement(0, 2)],
         description: ``,
@@ -72,7 +53,7 @@ const createMapContent = () => {
 document.querySelector(`.map`).classList.remove(`map--faded`);
 
 const createMapPin = (template, content) => {
-  let mapPinElement = template.cloneNode(true);
+  const mapPinElement = template.cloneNode(true);
   mapPinElement.firstChild.src = content.author.avatar;
   mapPinElement.firstChild.alt = content.offer.title;
   mapPinElement.style.left = content.location.x + 50 + `px`;
@@ -81,9 +62,8 @@ const createMapPin = (template, content) => {
 };
 
 const generateMapPins = (mapsContent) => {
-  let mapPinsList = document.querySelector(`.map__pins`);
-  let fragment = document.createDocumentFragment();
-  let mapPinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const fragment = document.createDocumentFragment();
+  const mapPinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   for (let i = 0; i < mapsContent.length; i++) {
     fragment.appendChild(createMapPin(mapPinTemplate, mapsContent[i]));
   }
