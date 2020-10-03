@@ -1,5 +1,6 @@
 "use strict";
 
+const map = document.querySelector(`.map`);
 const mapPinsList = document.querySelector(`.map__pins`);
 const mapPinMain = document.querySelector(`.map__pin--main`);
 const mapFilters = document.querySelector(`.map__filters-container`);
@@ -43,21 +44,15 @@ const houseTypes = {
 };
 */
 
-const MAIN_PIN_WIDTH = 50;
-const MAIN_PIN_HEIGHT = 50;
-
-const disabledForm = () => {
-  for (let i = 0; i < adFormElements.length; i++) {
-    adFormElements[i].disabled = true;
-  }
-
-  adFormHeader.disabled = true;
-  mapFilters.disabled = true;
+const roomValues = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
 };
 
-disabledForm();
-
-addressInput.value = parseInt(mapPinMain.style.left, 10) + MAIN_PIN_WIDTH / 2 + `, ` + parseInt(mapPinMain.style.top, 10) + MAIN_PIN_WIDTH / 2;
+const MAIN_PIN_WIDTH = 50;
+const MAIN_PIN_HEIGHT = 50;
 
 const getRandomMinMaxElement = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -198,50 +193,71 @@ const renderCard = (card) => {
 renderCard(DATA[0]);
 */
 
-const activationOfForm = () => {
-  document.querySelector(`.map`).classList.remove(`map--faded`);
-  adForm.classList.remove(`ad-form--disabled`);
-  for (let i = 0; i < adFormElements.length; i++) {
-    adFormElements[i].removeAttribute(`disabled`, `true`);
-  }
-  adFormHeader.disabled = false;
-};
-
 const setAddress = () => {
-  addressInput.value = parseInt(mapPinMain.style.left, 10) + MAIN_PIN_WIDTH / 2 + `, ` + parseInt(mapPinMain.style.top, 10) + MAIN_PIN_HEIGHT;
+  addressInput.value = parseInt(mapPinMain.style.left, 10) + MAIN_PIN_WIDTH / 2 + `, ` + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_HEIGHT);
 };
 
-mapPinMain.addEventListener(`mousedown`, function (evt) {
-  if (evt.button === 0) {
-    onPinMainClick();
-  }
-});
+setAddress();
 
-mapPinMain.addEventListener(`keydown`, function (evt) {
-  if (evt.key === `Enter`) {
-    onPinMainClick();
+const disabledForm = (elementFieldset) => {
+  for (let i = 0; i < adFormElements.length; i++) {
+    adFormElements[i].disabled = true;
   }
-});
-
-const validateRoomAndGuest = () => {
-  if ((capacityElements.value > roomNumberElements.value && capacityElements.value !== 0)
-  || (capacityElements.value === 0 && roomNumberElements.value !== 100)) {
-    roomNumberElements.setCustomValidity(`Выберите большее количество комнат`);
-  } else {
-    roomNumberElements.setCustomValidity(``);
-  }
+  elementFieldset.disabled = true;
 };
 
-const validateForm = () => {
-  validateRoomAndGuest();
+disabledForm(adFormHeader, mapFilters);
+
+const activationOfForm = (elementFieldset) => {
+  map.classList.remove(`map--faded`);
+  adForm.classList.remove(`ad-form--disabled`);
+
+  for (let i = 0; i < adFormElements.length; i++) {
+    adFormElements[i].disabled = false;
+  }
+  elementFieldset.disabled = false;
 };
 
-roomNumberElements.addEventListener(`change`, validateRoomAndGuest);
-capacityElements.addEventListener(`change`, validateRoomAndGuest);
-
-const onPinMainClick = () => {
-  activationOfForm();
-  validateForm();
-  renderPins(DATA);
+const activatePage = () => {
+  activationOfForm(adFormHeader);
   setAddress();
+  renderPins(DATA);
 };
+
+const onPinMouseDown = (evt) => {
+  if (evt.button === 0) {
+    activatePage();
+  }
+  mapPinMain.removeEventListener(`mousedown`, onPinMouseDown);
+};
+
+const onPinKeyDown = (evt) => {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+  mapPinMain.removeEventListener(`keydown`, onPinMouseDown);
+};
+
+mapPinMain.addEventListener(`mousedown`, onPinMouseDown);
+mapPinMain.addEventListener(`keydown`, onPinKeyDown);
+
+const checkRooms = (peopleAmount) => {
+  const seatingCapacityOptions = capacityElements.querySelectorAll(`option`);
+
+  seatingCapacityOptions.forEach((option) => {
+    option.disabled = true;
+  });
+
+  roomValues[peopleAmount].forEach((seatsAmount) => {
+    seatingCapacityOptions.forEach((option) => {
+      if (Number(option.value) === seatsAmount) {
+        option.disabled = false;
+        option.selected = true;
+      }
+    });
+  });
+};
+
+roomNumberElements.addEventListener(`change`, (evt) => {
+  checkRooms(evt.target.value);
+});
