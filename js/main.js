@@ -109,6 +109,33 @@ const createMapContent = () => {
 };
 
 // document.querySelector(`.map`).classList.remove(`map--faded`);
+const closeCard = () => {
+  const cardElement = map.querySelector(`.map__card`);
+  map.removeChild(cardElement);
+  document.removeEventListener(`keydown`, onCardEscPress);
+};
+
+const onCardEscPress = (evt) => {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closeCard();
+  }
+};
+
+const onCardEnterPress = (evt) => {
+  if (evt.key === `Enter`) {
+    evt.preventDefault();
+    closeCard();
+  }
+};
+
+const imagineCard = (data) => {
+  const card = document.querySelector(`.map__card`);
+  if (card) {
+    card.remove();
+  }
+  map.appendChild(renderCard(data));
+};
 
 const createMapPin = (template, content) => {
   const mapPinElement = template.cloneNode(true);
@@ -116,6 +143,10 @@ const createMapPin = (template, content) => {
   mapPinElement.firstChild.alt = content.offer.title;
   mapPinElement.style.left = content.location.x + MAIN_PIN_WIDTH + `px`;
   mapPinElement.style.top = content.location.y + MAIN_PIN_HEIGHT + `px`;
+
+  mapPinElement.addEventListener(`click`, () => {
+    imagineCard(content);
+  });
   return mapPinElement;
 };
 
@@ -197,6 +228,11 @@ const createCard = (cardsContent) => {
   renderFeatures(mapCard.querySelector(`.popup__features`), cardsContent.offer.features);
   renderPhotos(mapCard.querySelector(`.popup__photos`), cardsContent.offer.photos);
   compareQuantityRoomsGuests(mapCard.querySelector(`.popup__text--capacity`), cardsContent.offer.rooms, cardsContent.offer.guests);
+  mapCard.querySelector(`.popup__close`).addEventListener(`click`, () => {
+    closeCard();
+  });
+  mapCard.querySelector(`.popup__close`).addEventListener(`keydown`, onCardEnterPress);
+  document.addEventListener(`keydown`, onCardEscPress);
 
   return mapCard;
 };
@@ -239,7 +275,6 @@ const activatePage = () => {
   activationOfForm(adFormHeader);
   setAddressOnPageActive();
   renderPins(DATA);
-  clickPin(DATA);
 };
 
 const onPinMouseDown = (evt) => {
@@ -280,49 +315,16 @@ roomNumberElements.addEventListener(`change`, (evt) => {
   checkRooms(evt.target.value);
 });
 
-const closeCard = () => {
-  const cardElement = map.querySelector(`.map__card`);
-  map.removeChild(cardElement);
-  document.removeEventListener(`keydown`, onCardEscPress);
-};
-
-const onCardEscPress = (evt) => {
-  if (evt.key === `Escape`) {
-    evt.preventDefault();
-    closeCard();
-  }
-};
-
-const onCardEnterPress = (evt) => {
-  if (evt.key === `Enter`) {
-    evt.preventDefault();
-    closeCard();
-  }
-};
-
-const openCard = (elem) => {
-  let cardItems = map.querySelector(`.map__card`);
-  if (cardItems) {
-    map.removeChild(cardItems);
-  }
-  renderCard(elem);
-  cardItems = map.querySelector(`.map__card`);
-  document.addEventListener(`keydown`, onCardEscPress);
-  cardItems.querySelector(`.popup__close`).addEventListener(`keydown`, onCardEnterPress);
-  cardItems.querySelector(`.popup__close`).addEventListener(`click`, () => {
-    closeCard();
+const clickPin = () => {
+  const pins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+  pins.forEach((pin, i) => {
+    pin.addEventListener(`click`, () => {
+      map.appendChild(renderCard(DATA[i]));
+    });
   });
 };
 
-const clickPin = (arr) => {
-  const pinElements = map.querySelectorAll(`.map__pin:not(.map__pin--main)`);
-
-  for (let i = 0; i < arr.length; i++) {
-    pinElements[i].addEventListener(`click`, () => {
-      openCard(arr[i]);
-    });
-  }
-};
+clickPin();
 
 const validateType = () => {
   const typeForm = typeAdForm.value;
