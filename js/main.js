@@ -4,7 +4,7 @@ const map = document.querySelector(`.map`);
 const mapPinsList = document.querySelector(`.map__pins`);
 const mapPinMain = document.querySelector(`.map__pin--main`);
 const mapFilters = document.querySelector(`.map__filters-container`);
-// const templateCard = document.querySelector(`#card`);
+const templateCard = document.querySelector(`#card`);
 
 const adForm = document.querySelector(`.ad-form`);
 const adFormHeader = adForm.querySelector(`.ad-form-header`);
@@ -13,6 +13,12 @@ const addressInput = adForm.querySelector(`#address`);
 
 const roomNumberElements = adForm.querySelector(`#room_number`);
 const capacityElements = adForm.querySelector(`#capacity`);
+
+const titleAdForm = adForm.querySelector(`#title`);
+const typeAdForm = adForm.querySelector(`#type`);
+const priceAdForm = adForm.querySelector(`#price`);
+const timeIn = adForm.querySelector(`#timein`);
+const timeOut = adForm.querySelector(`#timeout`);
 
 const TITLE = [`Роскошный королевский дворец`, `Прекрасный дворец с огромными окнами в пол`, `Милая уютная квартирка`, `Просторная квартира с прекрасным видом`, `Уютный домик у моря в греческом стиле`, `Шикарный дом с видом на горы`, `Тихое и романтичное бунгало`, `Бунгало на побережье океана`];
 const CHECKIN = [`12:00`, `13:00`, `14:00`];
@@ -35,14 +41,12 @@ const PHOTOS = [
 ];
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
-/*
 const houseTypes = {
   palace: `Дворец`,
   flat: `Квартира`,
   house: `Дом`,
   bungalow: `Бунгало`,
 };
-*/
 
 const roomValues = {
   1: [1],
@@ -51,8 +55,18 @@ const roomValues = {
   100: [0]
 };
 
+const minHousingPrice = {
+  bungalow: `0`,
+  flat: `1000`,
+  house: `5000`,
+  palace: `10000`
+};
+
 const MAIN_PIN_WIDTH = 50;
 const MAIN_PIN_HEIGHT = 50;
+
+const MIN_TITLE_LENGTH = 30;
+const MAX_TITLE_LENGTH = 100;
 
 const getRandomMinMaxElement = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -116,7 +130,7 @@ const renderPins = (mapsContent) => {
 
 const DATA = createMapContent();
 
-/*
+
 const checkElementForData = (content, element) => {
   if (!content) {
     element.style.display = `none`;
@@ -167,6 +181,7 @@ const createCard = (cardsContent) => {
   mapCard.querySelector(`.popup__text--price`).textContent = cardsContent.offer.price + `₽/ночь`;
   mapCard.querySelector(`.popup__type`).textContent = houseTypes[cardsContent.offer.type];
   mapCard.querySelector(`.popup__text--time`).textContent = `Заезд после ` + cardsContent.offer.checkin + `, выезд до ` + cardsContent.offer.checkout;
+  mapCard.querySelector(`.popup__avatar`).src = cardsContent.author.avatar;
 
   checkElementForData(cardsContent.offer.title, mapCard.querySelector(`.popup__title`));
   checkElementForData(cardsContent.offer.address, mapCard.querySelector(`.popup__text--address`));
@@ -190,14 +205,16 @@ const renderCard = (card) => {
   mapFilters.insertAdjacentElement(`beforebegin`, createCard(card));
 };
 
-renderCard(DATA[0]);
-*/
+const setAddressOnPageNotActive = () => {
+  addressInput.value = parseInt(mapPinMain.style.left, 10) + MAIN_PIN_WIDTH / 2 + `, ` + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_HEIGHT / 2);
+};
 
-const setAddress = () => {
+setAddressOnPageNotActive();
+
+const setAddressOnPageActive = () => {
   addressInput.value = parseInt(mapPinMain.style.left, 10) + MAIN_PIN_WIDTH / 2 + `, ` + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_HEIGHT);
 };
 
-setAddress();
 
 const disabledForm = (elementFieldset) => {
   for (let i = 0; i < adFormElements.length; i++) {
@@ -220,8 +237,9 @@ const activationOfForm = (elementFieldset) => {
 
 const activatePage = () => {
   activationOfForm(adFormHeader);
-  setAddress();
+  setAddressOnPageActive();
   renderPins(DATA);
+  clickPin(DATA);
 };
 
 const onPinMouseDown = (evt) => {
@@ -260,4 +278,92 @@ const checkRooms = (peopleAmount) => {
 
 roomNumberElements.addEventListener(`change`, (evt) => {
   checkRooms(evt.target.value);
+});
+
+const closeCard = () => {
+  const cardElement = map.querySelector(`.map__card`);
+  map.removeChild(cardElement);
+  document.removeEventListener(`keydown`, onCardEscPress);
+};
+
+const onCardEscPress = (evt) => {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closeCard();
+  }
+};
+
+const onCardEnterPress = (evt) => {
+  if (evt.key === `Enter`) {
+    evt.preventDefault();
+    closeCard();
+  }
+};
+
+const openCard = (elem) => {
+  let cardItems = map.querySelector(`.map__card`);
+  if (cardItems) {
+    map.removeChild(cardItems);
+  }
+  renderCard(elem);
+  cardItems = map.querySelector(`.map__card`);
+  document.addEventListener(`keydown`, onCardEscPress);
+  cardItems.querySelector(`.popup__close`).addEventListener(`keydown`, onCardEnterPress);
+  cardItems.querySelector(`.popup__close`).addEventListener(`click`, () => {
+    closeCard();
+  });
+};
+
+const clickPin = (arr) => {
+  const pinElements = map.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+
+  for (let i = 0; i < arr.length; i++) {
+    pinElements[i].addEventListener(`click`, () => {
+      openCard(arr[i]);
+    });
+  }
+};
+
+const validateType = () => {
+  const typeForm = typeAdForm.value;
+  const minPrice = minHousingPrice[typeForm];
+
+  priceAdForm.setAttribute(`placeholder`, minPrice);
+  priceAdForm.setAttribute(`min`, minPrice);
+};
+
+const validateTime = (timeInitial, timeChange) => {
+  const timeForm = timeChange.options;
+
+  for (let i = 0; i < timeForm.length; i++) {
+    timeForm[i].removeAttribute(`selected`);
+  }
+
+  timeForm[timeInitial.selectedIndex].setAttribute(`selected`, `selected`);
+};
+
+typeAdForm.addEventListener(`change`, () => {
+  validateType();
+});
+
+timeIn.addEventListener(`change`, () => {
+  validateTime(timeIn, timeOut);
+});
+
+timeOut.addEventListener(`change`, () => {
+  validateTime(timeOut, timeIn);
+});
+
+titleAdForm.addEventListener(`input`, () => {
+  const valueLength = titleAdForm.value.length;
+
+  if (valueLength < MIN_TITLE_LENGTH) {
+    titleAdForm.setCustomValidity(`Ещё ` + (MIN_TITLE_LENGTH - valueLength) + `симв.`);
+  } else if (valueLength > MAX_TITLE_LENGTH) {
+    titleAdForm.setCustomValidity(`Удалите лишние ` + (valueLength - MAX_TITLE_LENGTH) + `симв.`);
+  } else {
+    titleAdForm.setCustomValidity(``);
+  }
+
+  titleAdForm.reportValidity();
 });
