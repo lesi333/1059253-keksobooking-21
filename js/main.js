@@ -129,12 +129,12 @@ const onCardEnterPress = (evt) => {
   }
 };
 
-const imagineCard = (data) => {
+const renderCard = (data) => {
   const card = document.querySelector(`.map__card`);
   if (card) {
     card.remove();
   }
-  map.appendChild(renderCard(data));
+  map.appendChild(createCard(data));
 };
 
 const createMapPin = (template, content) => {
@@ -145,7 +145,7 @@ const createMapPin = (template, content) => {
   mapPinElement.style.top = content.location.y + MAIN_PIN_HEIGHT + `px`;
 
   mapPinElement.addEventListener(`click`, () => {
-    imagineCard(content);
+    renderCard(content);
   });
   return mapPinElement;
 };
@@ -237,10 +237,6 @@ const createCard = (cardsContent) => {
   return mapCard;
 };
 
-const renderCard = (card) => {
-  mapFilters.insertAdjacentElement(`beforebegin`, createCard(card));
-};
-
 const setAddressOnPageNotActive = () => {
   addressInput.value = parseInt(mapPinMain.style.left, 10) + MAIN_PIN_WIDTH / 2 + `, ` + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_HEIGHT / 2);
 };
@@ -315,17 +311,6 @@ roomNumberElements.addEventListener(`change`, (evt) => {
   checkRooms(evt.target.value);
 });
 
-const clickPin = () => {
-  const pins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
-  pins.forEach((pin, i) => {
-    pin.addEventListener(`click`, () => {
-      map.appendChild(renderCard(DATA[i]));
-    });
-  });
-};
-
-clickPin();
-
 const validateType = () => {
   const typeForm = typeAdForm.value;
   const minPrice = minHousingPrice[typeForm];
@@ -334,26 +319,19 @@ const validateType = () => {
   priceAdForm.setAttribute(`min`, minPrice);
 };
 
-const validateTime = (timeInitial, timeChange) => {
-  const timeForm = timeChange.options;
-
-  for (let i = 0; i < timeForm.length; i++) {
-    timeForm[i].removeAttribute(`selected`);
-  }
-
-  timeForm[timeInitial.selectedIndex].setAttribute(`selected`, `selected`);
+const onChangeTimeIn = () => {
+  timeOut.value = timeIn.value;
 };
+
+const onChangeTimeOut = () => {
+  timeIn.value = timeOut.value;
+};
+
+timeIn.addEventListener(`change`, onChangeTimeIn);
+timeOut.addEventListener(`change`, onChangeTimeOut);
 
 typeAdForm.addEventListener(`change`, () => {
   validateType();
-});
-
-timeIn.addEventListener(`change`, () => {
-  validateTime(timeIn, timeOut);
-});
-
-timeOut.addEventListener(`change`, () => {
-  validateTime(timeOut, timeIn);
 });
 
 titleAdForm.addEventListener(`input`, () => {
