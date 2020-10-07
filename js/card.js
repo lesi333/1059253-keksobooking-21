@@ -77,10 +77,10 @@
     renderPhotos(mapCard.querySelector(`.popup__photos`), cardsContent.offer.photos);
     compareQuantityRoomsGuests(mapCard.querySelector(`.popup__text--capacity`), cardsContent.offer.rooms, cardsContent.offer.guests);
     mapCard.querySelector(`.popup__close`).addEventListener(`click`, () => {
-      window.closeCard();
+      window.map.closeCard();
     });
-    mapCard.querySelector(`.popup__close`).addEventListener(`keydown`, window.onCardEnterPress);
-    document.addEventListener(`keydown`, window.onCardEscPress);
+    mapCard.querySelector(`.popup__close`).addEventListener(`keydown`, window.map.onCardEnterPress);
+    document.addEventListener(`keydown`, window.map.onCardEscPress);
 
     return mapCard;
   };

@@ -3,24 +3,30 @@
 (() => {
   const map = document.querySelector(`.map`);
 
-  window.closeCard = () => {
+  const closeCard = () => {
     const cardElement = map.querySelector(`.map__card`);
     map.removeChild(cardElement);
-    document.removeEventListener(`keydown`, window.onCardEscPress);
+    document.removeEventListener(`keydown`, onCardEscPress);
   };
 
-  window.onCardEscPress = (evt) => {
+  const onCardEscPress = (evt) => {
     if (evt.key === `Escape`) {
       evt.preventDefault();
-      window.closeCard();
+      closeCard();
     }
   };
 
-  window.onCardEnterPress = (evt) => {
+  const onCardEnterPress = (evt) => {
     if (evt.key === `Enter`) {
       evt.preventDefault();
-      window.closeCard();
+      closeCard();
     }
+  };
+
+  window.map = {
+    closeCard,
+    onCardEscPress,
+    onCardEnterPress
   };
 
   window.renderCard = (data) => {
