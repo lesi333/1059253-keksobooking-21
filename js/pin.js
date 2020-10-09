@@ -19,7 +19,7 @@
   window.onRenderPinsLoadSuccess = (pin) => {
     const fragment = document.createDocumentFragment();
     const mapPinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-    const PIN_NUMBERS = 8;
+    const PIN_NUMBERS = 10;
     for (let i = 0; i < PIN_NUMBERS; i++) {
       fragment.appendChild(createMapPin(mapPinTemplate, pin[i]));
     }
