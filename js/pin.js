@@ -3,7 +3,7 @@
 (() => {
   const mapPinsList = document.querySelector(`.map__pins`);
 
-  window.createMapPin = (template, content) => {
+  const createMapPin = (template, content) => {
     const mapPinElement = template.cloneNode(true);
     mapPinElement.firstChild.src = content.author.avatar;
     mapPinElement.firstChild.alt = content.offer.title;
@@ -20,8 +20,12 @@
     const fragment = document.createDocumentFragment();
     const mapPinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
     for (let i = 0; i < mapsContent.length; i++) {
-      fragment.appendChild(window.createMapPin(mapPinTemplate, mapsContent[i]));
+      fragment.appendChild(createMapPin(mapPinTemplate, mapsContent[i]));
     }
     mapPinsList.appendChild(fragment);
+  };
+
+  window.pin = {
+    createMapPin
   };
 })();
