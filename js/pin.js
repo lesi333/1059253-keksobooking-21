@@ -7,8 +7,8 @@
     const mapPinElement = template.cloneNode(true);
     mapPinElement.firstChild.src = content.author.avatar;
     mapPinElement.firstChild.alt = content.offer.title;
-    mapPinElement.style.left = content.location.x + window.util.mainPinParam.MAIN_PIN_WIDTH + `px`;
-    mapPinElement.style.top = content.location.y + window.util.mainPinParam.MAIN_PIN_HEIGHT + `px`;
+    mapPinElement.style.left = content.location.x - (window.util.pinParam.PIN_WIDTH / 2) + `px`;
+    mapPinElement.style.top = content.location.y - (window.util.pinParam.PIN_HEIGHT) + `px`;
 
     mapPinElement.addEventListener(`click`, () => {
       window.renderCard(content);
@@ -16,11 +16,12 @@
     return mapPinElement;
   };
 
-  window.renderPins = (mapsContent) => {
+  window.onRenderPinsLoadSuccess = (pin) => {
     const fragment = document.createDocumentFragment();
     const mapPinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-    for (let i = 0; i < mapsContent.length; i++) {
-      fragment.appendChild(createMapPin(mapPinTemplate, mapsContent[i]));
+    const PIN_NUMBERS = 10;
+    for (let i = 0; i < PIN_NUMBERS; i++) {
+      fragment.appendChild(createMapPin(mapPinTemplate, pin[i]));
     }
     mapPinsList.appendChild(fragment);
   };

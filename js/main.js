@@ -7,7 +7,7 @@ const adForm = document.querySelector(`.ad-form`);
 const adFormHeader = adForm.querySelector(`.ad-form-header`);
 const adFormElements = adForm.querySelectorAll(`.ad-form__element`);
 
-const DATA = window.createMapContent();
+// const DATA = window.createMapContent();
 
 const disabledForm = (elementFieldset) => {
   for (let i = 0; i < adFormElements.length; i++) {
@@ -28,10 +28,25 @@ const activationOfForm = (elementFieldset) => {
   elementFieldset.disabled = false;
 };
 
+
+const onShowError = (errorMessage) => {
+  const node = document.createElement(`div`);
+
+  node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
+  node.style.position = `absolute`;
+  node.style.left = 0;
+  node.style.right = 0;
+  node.style.fontSize = `30px`;
+
+  node.textContent = errorMessage;
+  document.body.insertAdjacentElement(`afterbegin`, node);
+};
+
 const activatePage = () => {
   activationOfForm(adFormHeader);
   window.setAddressOnPageActive();
-  window.renderPins(DATA);
+  // window.renderPins(DATA);
+  window.load(window.onRenderPinsLoadSuccess, onShowError);
 };
 
 const onPinMouseDown = (evt) => {
