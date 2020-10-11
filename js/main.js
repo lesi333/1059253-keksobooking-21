@@ -8,6 +8,8 @@ const adForm = document.querySelector(`.ad-form`);
 const adFormHeader = adForm.querySelector(`.ad-form-header`);
 const adFormElements = adForm.querySelectorAll(`.ad-form__element`);
 const resetAdForm = document.querySelector(`.ad-form__reset`);
+const typeAdForm = adForm.querySelector(`#type`);
+const roomNumberElements = adForm.querySelector(`#room_number`);
 const templateSuccessForm = document.querySelector(`#success`).content.querySelector(`.success`);
 const templateErrorForm = document.querySelector(`#error`).content.querySelector(`.error`);
 
@@ -46,10 +48,19 @@ const onShowError = (errorMessage) => {
   document.body.insertAdjacentElement(`afterbegin`, node);
 };
 
+const deletePins = () => {
+  const pins = mapPinsList.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+  for (let pin of pins) {
+    pin.remove();
+  }
+};
+
 const activatePage = () => {
   activationOfForm(adFormHeader);
   window.setAddressOnPageActive();
   // window.renderPins(DATA);
+  window.form.checkRooms(roomNumberElements.value);
+  window.form.validateType(typeAdForm.value);
   window.load(window.onRenderPinsLoadSuccess, onShowError);
 };
 
@@ -90,8 +101,20 @@ const onFormSendSuccess = () => {
   document.addEventListener(`mouseup`, onSuccessPopupClick);
   adForm.appendChild(successPopup);
 
-  disabledForm(adFormHeader, mapFilters);
   clearForm();
+  deletePins();
+
+  window.form.setAddressOnPageNotActive();
+
+  map.classList.add(`map--faded`);
+  disabledForm(adFormHeader, mapFilters);
+  adForm.classList.add(`ad-form--disabled`);
+
+  typeAdForm.removeEventListener(`change`, window.form.validateType);
+  roomNumberElements.removeEventListener(`change`, window.form.checkRooms);
+
+  mapPinMain.addEventListener(`mousedown`, onPinMouseDown);
+  mapPinMain.addEventListener(`keydown`, onPinKeyDown);
 };
 
 const onFormSendError = (errorMessage) => {
@@ -130,10 +153,12 @@ const onFormSendError = (errorMessage) => {
   mapPinsList.appendChild(errorPopup);
 };
 
-adForm.addEventListener(`submit`, (evt) => {
+const onFormSubmit = (evt) => {
   evt.preventDefault();
   window.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
-});
+};
+
+adForm.addEventListener(`submit`, onFormSubmit);
 
 resetAdForm.addEventListener(`click`, (evt) => {
   evt.preventDefault();
