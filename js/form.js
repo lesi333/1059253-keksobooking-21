@@ -64,10 +64,13 @@
   const validateType = () => {
     const typeForm = typeAdForm.value;
     const minPrice = minHousingPrice[typeForm];
-
-    priceAdForm.setAttribute(`placeholder`, minPrice);
-    priceAdForm.setAttribute(`min`, minPrice);
+    priceAdForm.min = minPrice;
+    priceAdForm.placeholder = minPrice;
   };
+
+  typeAdForm.addEventListener(`change`, () => {
+    validateType();
+  });
 
   const onChangeTimeIn = () => {
     timeOut.value = timeIn.value;
@@ -80,11 +83,8 @@
   timeIn.addEventListener(`change`, onChangeTimeIn);
   timeOut.addEventListener(`change`, onChangeTimeOut);
 
-  typeAdForm.addEventListener(`change`, () => {
-    validateType();
-  });
 
-  titleAdForm.addEventListener(`input`, () => {
+  const onCheckTitleValidity = () => {
     const valueLength = titleAdForm.value.length;
 
     if (valueLength < MIN_TITLE_LENGTH) {
@@ -96,5 +96,13 @@
     }
 
     titleAdForm.reportValidity();
-  });
+  };
+
+  titleAdForm.addEventListener(`input`, onCheckTitleValidity);
+
+  window.form = {
+    checkRooms,
+    validateType,
+    setAddressOnPageNotActive
+  };
 })();
