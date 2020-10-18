@@ -2,7 +2,8 @@
 
 (() => {
   const mapPinsList = document.querySelector(`.map__pins`);
-  const MAX_PINS_ON_MAP = 5;
+  window.DATA = [];
+
   const createMapPin = (template, content) => {
     const mapPinElement = template.cloneNode(true);
     mapPinElement.firstChild.src = content.author.avatar;
@@ -16,13 +17,13 @@
     return mapPinElement;
   };
 
-  window.onRenderPinsLoadSuccess = (pin) => {
+  window.renderPins = (pins) => {
     const fragment = document.createDocumentFragment();
     const mapPinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
-    for (let i = 0; i < MAX_PINS_ON_MAP; i++) {
-      fragment.appendChild(createMapPin(mapPinTemplate, pin[i]));
-    }
+    pins.forEach((pin) => {
+      fragment.appendChild(createMapPin(mapPinTemplate, pin));
+    });
     mapPinsList.appendChild(fragment);
   };
 

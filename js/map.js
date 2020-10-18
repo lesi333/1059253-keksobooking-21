@@ -5,8 +5,10 @@
 
   const closeCard = () => {
     const cardElement = map.querySelector(`.map__card`);
-    map.removeChild(cardElement);
-    document.removeEventListener(`keydown`, onCardEscPress);
+    if (cardElement) {
+      map.removeChild(cardElement);
+      document.removeEventListener(`keydown`, onCardEscPress);
+    }
   };
 
   const onCardEscPress = (evt) => {

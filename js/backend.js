@@ -2,12 +2,40 @@
 
 (() => {
   const URL = {
+    DOWNLOAD: `https://21.javascript.pages.academy/keksobooking/data`,
     UPLOAD: `https://21.javascript.pages.academy/keksobooking`,
   };
 
+  const StatusCode = {
+    OK: 200
+  };
+
   const TIMEOUT_IN_MS = 10000;
-  let loadType = `GET`;
-  let response = [];
+
+  const load = (onSuccess, onError) => {
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = `json`;
+
+    xhr.addEventListener(`load`, function () {
+      if (xhr.status === StatusCode.OK) {
+        onSuccess(xhr.response);
+      } else {
+        onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
+      }
+    });
+    xhr.addEventListener(`error`, () => {
+      onError(`Произошла ошибка соединения`);
+    });
+
+    xhr.addEventListener(`timeout`, () => {
+      onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
+    });
+
+    xhr.timeout = TIMEOUT_IN_MS;
+
+    xhr.open(`GET`, URL.DOWNLOAD);
+    xhr.send();
+  };
 
   const save = (data, onSuccess, onError) => {
     const xhr = new XMLHttpRequest();
@@ -34,6 +62,7 @@
           onError(`Произошла ошибка сервера: ` + xhr.status + ` ` + xhr.statusText);
       }
     });
+
     xhr.addEventListener(`error`, () => {
       onError(`Произошла ошибка соединения`);
     });
@@ -41,16 +70,16 @@
     xhr.addEventListener(`timeout`, () => {
       onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
     });
-    loadType = data ? `POST` : `GET`;
+
     xhr.timeout = TIMEOUT_IN_MS;
 
     xhr.open(`POST`, URL.UPLOAD);
     xhr.send(data);
   };
 
-  window.save = {
+  window.backend = {
+    load,
     save,
-    response,
-    loadType
+    URL
   };
 })();
