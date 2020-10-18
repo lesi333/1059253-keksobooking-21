@@ -6,8 +6,10 @@
   };
 
   const TIMEOUT_IN_MS = 10000;
+  let loadType = `GET`;
+  let response = [];
 
-  window.save = (data, onSuccess, onError) => {
+  const save = (data, onSuccess, onError) => {
     const xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
 
@@ -39,9 +41,16 @@
     xhr.addEventListener(`timeout`, () => {
       onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
     });
+    loadType = data ? `POST` : `GET`;
     xhr.timeout = TIMEOUT_IN_MS;
 
     xhr.open(`POST`, URL.UPLOAD);
     xhr.send(data);
+  };
+
+  window.save = {
+    save,
+    response,
+    loadType
   };
 })();

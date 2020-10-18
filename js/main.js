@@ -12,7 +12,8 @@ const typeAdForm = adForm.querySelector(`#type`);
 const roomNumberElements = adForm.querySelector(`#room_number`);
 const templateSuccessForm = document.querySelector(`#success`).content.querySelector(`.success`);
 const templateErrorForm = document.querySelector(`#error`).content.querySelector(`.error`);
-
+const pinMainPositionLeft = mapPinMain.style.left;
+const pinMainPositionTop = mapPinMain.style.top;
 // const DATA = window.createMapContent();
 
 const disabledForm = (elementFieldset) => {
@@ -34,21 +35,7 @@ const activationOfForm = (elementFieldset) => {
   elementFieldset.disabled = false;
 };
 
-
-const onShowError = (errorMessage) => {
-  const node = document.createElement(`div`);
-
-  node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
-  node.style.position = `absolute`;
-  node.style.left = 0;
-  node.style.right = 0;
-  node.style.fontSize = `30px`;
-
-  node.textContent = errorMessage;
-  document.body.insertAdjacentElement(`afterbegin`, node);
-};
-
-const deletePins = () => {
+window.deletePins = () => {
   const pins = mapPinsList.querySelectorAll(`.map__pin:not(.map__pin--main)`);
   for (let pin of pins) {
     pin.remove();
@@ -61,7 +48,9 @@ const activatePage = () => {
   // window.renderPins(DATA);
   window.form.checkRooms(roomNumberElements.value);
   window.form.validateType(typeAdForm.value);
-  window.load(window.onRenderPinsLoadSuccess, onShowError);
+  window.onRenderPinsLoadSuccess(window.save.response);
+  // console.log(window.filter.onTypeFilterChange());
+  window.filter.housingTypeFilterElement.addEventListener(`change`, window.filter.onTypeFilterChange);
 };
 
 const onPinMouseDown = (evt) => {
@@ -102,8 +91,10 @@ const onFormSendSuccess = () => {
   adForm.appendChild(successPopup);
 
   clearForm();
-  deletePins();
+  window.deletePins();
 
+  mapPinMain.style.left = pinMainPositionLeft;
+  mapPinMain.style.top = pinMainPositionTop;
   window.form.setAddressOnPageNotActive();
 
   map.classList.add(`map--faded`);
@@ -112,6 +103,8 @@ const onFormSendSuccess = () => {
 
   typeAdForm.removeEventListener(`change`, window.form.validateType);
   roomNumberElements.removeEventListener(`change`, window.form.checkRooms);
+
+  window.filter.housingTypeFilterElement.removeEventListener(`change`, window.filter.onTypeFilterChange);
 
   mapPinMain.addEventListener(`mousedown`, onPinMouseDown);
   mapPinMain.addEventListener(`keydown`, onPinKeyDown);
@@ -132,10 +125,10 @@ const onFormSendError = (errorMessage) => {
 
   const tryAgainSend = (evt) => {
     onErrorPopupClick(evt);
-    if (window.load.loadType === `GET`) {
-      window.load(window.onRenderPinsLoadSuccess, onShowError);
+    if (window.save.loadType === `GET`) {
+      window.load(window.onRenderPinsLoadSuccess, window.util.onShowError);
     } else {
-      window.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
+      window.save.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
     }
     errorButton.removeEventListener(`mouseup`, tryAgainSend);
   };
@@ -155,7 +148,7 @@ const onFormSendError = (errorMessage) => {
 
 const onFormSubmit = (evt) => {
   evt.preventDefault();
-  window.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
+  window.save.save(new FormData(adForm), onFormSendSuccess, onFormSendError);
 };
 
 adForm.addEventListener(`submit`, onFormSubmit);
