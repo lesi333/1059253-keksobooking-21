@@ -26,6 +26,8 @@
       container.textContent = dataRooms + ` комнат для ` + dataGuests + ` гостя`;
     } else if (dataRooms === 5) {
       container.textContent = dataRooms + ` комнат для ` + dataGuests + ` гостей`;
+    } else if (dataRooms === 0 && dataGuests === 0) {
+      container.textContent = dataRooms + ` комнат для ` + dataGuests + ` гостей`;
     }
   };
 
