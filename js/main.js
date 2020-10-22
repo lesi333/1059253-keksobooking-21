@@ -17,7 +17,6 @@
   const templateErrorForm = document.querySelector(`#error`).content.querySelector(`.error`);
   const pinMainPositionLeft = mapPinMain.style.left;
   const pinMainPositionTop = mapPinMain.style.top;
-  // const DATA = window.createMapContent();
 
   const disabledForm = (elementFieldset) => {
     for (let i = 0; i < adFormElements.length; i++) {
@@ -33,11 +32,7 @@
     filterFormFeaturesElement.disabled = true;
 
     filterForm.reset();
-    window.filter.housingTypeFilterElement.removeEventListener(`change`, window.filter.onTypeFilterChange);
-    window.filter.housingPriceFilterElement.removeEventListener(`change`, window.filter.onPriceFilterChange);
-    window.filter.housingRoomsFilterElement.removeEventListener(`change`, window.filter.onRoomsFilterChange);
-    window.filter.housingGuestsFilterElement.removeEventListener(`change`, window.filter.onGuestsFilterChange);
-    filterFormFeaturesElement.removeEventListener(`click`, window.filter.onFeatureFilterClick);
+    filterForm.removeEventListener(`change`, window.debounce(window.filter.onUpdatePinOnFilters));
   };
 
   const activationMapFilters = () => {
@@ -46,11 +41,7 @@
     });
     filterFormFeaturesElement.disabled = false;
 
-    window.filter.housingTypeFilterElement.addEventListener(`change`, window.filter.onTypeFilterChange);
-    window.filter.housingPriceFilterElement.addEventListener(`change`, window.filter.onPriceFilterChange);
-    window.filter.housingRoomsFilterElement.addEventListener(`change`, window.filter.onRoomsFilterChange);
-    window.filter.housingGuestsFilterElement.addEventListener(`change`, window.filter.onGuestsFilterChange);
-    filterFormFeaturesElement.addEventListener(`click`, window.filter.onFeatureFilterClick);
+    filterForm.addEventListener(`change`, window.debounce(window.filter.onUpdatePinOnFilters));
   };
 
   disabledForm(adFormHeader);

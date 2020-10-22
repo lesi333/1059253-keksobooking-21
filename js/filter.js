@@ -70,22 +70,8 @@
     window.renderPins(applyAll(window.DATA));
   };
 
-  const onTypeFilterChange = window.debounce(onUpdatePinOnFilters);
-  const onPriceFilterChange = window.debounce(onUpdatePinOnFilters);
-  const onRoomsFilterChange = window.debounce(onUpdatePinOnFilters);
-  const onGuestsFilterChange = window.debounce(onUpdatePinOnFilters);
-  const onFeatureFilterClick = window.debounce(onUpdatePinOnFilters);
-
   window.filter = {
     onDataLoadSuccess,
-    housingTypeFilterElement,
-    housingPriceFilterElement,
-    housingRoomsFilterElement,
-    housingGuestsFilterElement,
-    onTypeFilterChange,
-    onPriceFilterChange,
-    onRoomsFilterChange,
-    onGuestsFilterChange,
-    onFeatureFilterClick
+    onUpdatePinOnFilters
   };
 })();
