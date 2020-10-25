@@ -1,12 +1,13 @@
 'use strict';
+
 const URL_DOWNLOAD = `https://21.javascript.pages.academy/keksobooking/data`;
 const URL_UPLOAD = `https://21.javascript.pages.academy/keksobooking`;
+
+const TIMEOUT_IN_MS = 10000;
 
 const StatusCode = {
   OK: 200
 };
-
-const TIMEOUT_IN_MS = 10000;
 
 const load = (onSuccess, onError) => {
   const xhr = new XMLHttpRequest();

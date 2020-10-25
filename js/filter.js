@@ -63,7 +63,7 @@ const onDataLoadSuccess = (data) => {
   window.renderPins(applyAll(window.DATA));
 };
 
-const onUpdatePinOnFilters = () => {
+const onFiltersUpdate = () => {
   window.deletePins();
   window.map.closeCard();
   window.renderPins(applyAll(window.DATA));
@@ -71,5 +71,5 @@ const onUpdatePinOnFilters = () => {
 
 window.filter = {
   onDataLoadSuccess,
-  onUpdatePinOnFilters
+  onFiltersUpdate
 };
