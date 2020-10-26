@@ -24,16 +24,16 @@ const onCardEnterPress = (evt) => {
   }
 };
 
-window.map = {
-  closeCard,
-  onCardEscPress,
-  onCardEnterPress
-};
-
 window.renderCard = (data) => {
   const card = document.querySelector(`.map__card`);
   if (card) {
     card.remove();
   }
   map.appendChild(window.createCard(data));
+};
+
+window.map = {
+  closeCard,
+  onCardEscPress,
+  onCardEnterPress
 };
